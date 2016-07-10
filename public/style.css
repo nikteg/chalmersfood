@@ -1,0 +1,59 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  box-sizing: border-box;
+  font: 14px/1.5em sans-serif;
+  background: #f2f2f2;
+  color: #333;
+  margin: 0 0 3.5em;
+  padding: 1em;
+}
+
+select {
+  font: 18px/1.5em sans-serif;
+}
+
+a {
+  color: #333;
+}
+
+a:hover {
+  color: #FF0044;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li.restaurant li {
+  border-bottom: 1px solid #dedede;
+  padding: 0.25em 0;
+}
+
+h1 {
+  margin: 0.25em 0 0.5em;
+}
+
+h3 {
+  border-bottom: 1px solid #dedede;
+  margin: 1.5em 0 0em 0;
+  padding-bottom: 0.25em;
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+}
+
+#footer img {
+  vertical-align: middle;
+}
+
+.hidden {
+  display: none;
+}

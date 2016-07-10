@@ -1,0 +1,23 @@
+doctype html
+html
+  head
+    title Lunch på Chalmers
+    link(href="style.css", rel="stylesheet")
+  body
+    select(id="day")
+      each day, index in ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"]
+        if index == selectedDay
+          option(value=index, selected="selected")= day
+        else
+          option(value=index)= day
+    ul
+      each restaurant in data
+        li(class="restaurant")
+          h3= restaurant.name
+          if restaurant.items == null || restaurant.items.length === 0
+            i Ingen lunch
+          else
+            ul
+              each food in restaurant.items
+                li= food
+  script(src="main.js")
