@@ -5,63 +5,83 @@ const async = require("async");
 
 const app = express();
 
+const CACHE_LIFE = 12 * 60 * 60 * 1000;
+const cache = { date: Date.now(), data: null };
+
 const restaurants = [
   {
     name: "Kårresturangen",
     url: "http://intern.chalmerskonferens.se/view/restaurant/karrestaurangen/Veckomeny.rss",
     format: "text/xml",
-    parse: ($, day) => {
-      return $("item").map((i, el) => {
-        return $(el).find("tr").map((j, el) => {
-          const name = $(el).find("b").text();
-          const food = $(el).find("td").get(1).text();
+    parse: ($) => $("item").map((i, el) => $(el).find("tr").map((j, el2) => {
+      const name = $(el2)
+        .find("b")
+        .text();
 
-          return `${name} – ${food}`;
-        }).get();
-      }).get()[day];
-    }
-  },
-  {
-    name: "Linsen",
-    url: "http://intern.chalmerskonferens.se/view/restaurant/linsen/RSS%20Feed.rss",
-    format: "text/xml",
-    parse: ($, day) => {
-      return $("item").map((i, el) => {
-        return $(el).find("tr").map((j, el) => {
-          const name = $(el).find("b").text();
-          const food = $(el).find("td").get(1).text();
+      const food = $(el2)
+        .find("td")
+        .get(1)
+        .text();
 
-          return `${name} – ${food}`;
-        }).get();
-      }).get()[day];
-    }
+      return `${name} – ${food}`;
+    })
+    .get()).get(),
   },
   {
     name: "Einstein",
     url: "http://www.butlercatering.se/print/6",
     format: "text/html",
-    parse: ($, day) => {
+    parse: ($) => {
       const items = [];
 
-      $(".node-lunchmeny .content .field-day").map((i, el) => {
+      $(".node-lunchmeny .content .field-day").map((i, el) =>
+        items.push(
+          $(el)
+          .find("p")
+          .map((j, el2) => $(el2).text())
+          .get()
+          .map(f => f.trim())
+          .filter(f => f !== "")));
 
-        items.push($(el).find("p").map((j, el) => $(el).text()).get().map(f => f.trim()).filter(f => f !== ""));
+      return items;
+    },
+  },
+  {
+    name: "Linsen",
+    url: "http://intern.chalmerskonferens.se/view/restaurant/linsen/RSS%20Feed.rss",
+    format: "text/xml",
+    parse: ($) => $("item").map((i, el) => $(el).find("tr").map((j, el2) => {
+      const name = $(el2)
+        .find("b")
+        .text();
 
-      });
+      const food = $(el2)
+        .find("td")
+        .get(1)
+        .text();
 
-      return items[day];
-    }
-  }
-  // "express": {
-  //   "url": "http://intern.chalmerskonferens.se/view/restaurant/express/Veckomeny",
-  //   "format": "text/html",
-  //   "encoding": "utf-8"
-  // },
-  // "tegel": {
-  //   "url": "http://tegel.kvartersmenyn.se",
-  //   "format": "text/html",
-  //   "encoding": "utf-8"
-  // }
+      return `${name} – ${food}`;
+    })
+      .get()).get(),
+  },
+  {
+    name: "Express",
+    url: "http://intern.chalmerskonferens.se/view/restaurant/express/Veckomeny.rss",
+    format: "text/xml",
+    parse: ($) => $("item").map((i, el) => $(el).find("tr").map((j, el2) => {
+      const name = $(el2)
+        .find("b")
+        .text();
+
+      const food = $(el2)
+        .find("td")
+        .get(1)
+        .text();
+
+      return `${name} – ${food}`;
+    })
+    .get()).get(),
+  },
 ];
 
 app.set("view engine", "pug");
@@ -69,11 +89,21 @@ app.use(express.static("public"));
 
 const day = new Date();
 const today = Math.max(Math.min(0, day.getDay() - 1), 4);
+let clients = [];
+let isFetching = false;
 
-app.get("/", function (req, res) {
-  const data = "test";
+const getData = () => new Promise((resolve, reject) => {
+  clients.push(resolve);
 
-  const selectedDay = req.query.day || today;
+  if (isFetching) return;
+
+  if (cache.data && Date.now() < cache.date + CACHE_LIFE) {
+    return resolve(cache.data);
+  }
+
+  isFetching = true;
+
+  console.log("Cache invalid or no cache found, fetching...");
 
   async.map(restaurants, (r, cb) => {
     request(r.url, (err, resp, body) => {
@@ -81,21 +111,44 @@ app.get("/", function (req, res) {
         return cb(null, {
           name: r.name,
           items: r.parse(cheerio.load(body, {
-            xmlMode: r.format === "text/xml"
-          }), selectedDay)
+            xmlMode: r.format === "text/xml",
+          })),
         });
       }
 
-      cb(null);
+      return cb(null);
     });
   }, (err, results) => {
     const data = results.filter(r => r != null);
 
-    res.render("index", { data, selectedDay });
+    console.log("Setting new cache!");
+
+    cache.date = Date.now();
+    cache.data = data;
+
+    isFetching = false;
+
+    console.log("Resolving new data to", clients.length, "clients");
+    clients.map(f => f(data));
+
+    clients = [];
   });
 });
 
-const port = process.env.port || 3000;
-app.listen(port, function () {
-  console.log(`Example app listening on port ${port}!`);
+const filterDay = (data, dayIndex) => data.map(r => {
+  const items = r.items[dayIndex] || [];
+
+  return Object.assign({}, r, { items });
 });
+
+app.get("/", (req, res) => {
+  const selectedDay = req.query.day || today;
+
+  getData().then(data => res.render("index", {
+    data: filterDay(data, selectedDay),
+    selectedDay,
+  }));
+});
+
+const port = process.env.port || 3000;
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
