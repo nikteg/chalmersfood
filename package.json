@@ -15,5 +15,12 @@
     "express": "^4.14.0",
     "pug": "^2.0.0-beta3",
     "request": "^2.73.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.0.1",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.10.2",
+    "eslint-plugin-jsx-a11y": "^2.0.0",
+    "eslint-plugin-react": "^5.2.2"
   }
 }
