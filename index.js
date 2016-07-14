@@ -93,17 +93,16 @@ let clients = [];
 let isFetching = false;
 
 const getData = () => new Promise((resolve, reject) => {
-  clients.push(resolve);
-
-  if (isFetching) return;
-
   if (cache.data && Date.now() < cache.date + CACHE_LIFE) {
     return resolve(cache.data);
   }
 
-  isFetching = true;
+  clients.push(resolve);
+  if (isFetching) return;
 
   console.log("Cache invalid or no cache found, fetching...");
+
+  isFetching = true;
 
   async.map(restaurants, (r, cb) => {
     request(r.url, (err, resp, body) => {
