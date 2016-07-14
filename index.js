@@ -88,7 +88,7 @@ app.set("view engine", "pug");
 app.use(express.static("public"));
 
 const day = new Date();
-const today = Math.max(Math.min(0, day.getDay() - 1), 4);
+const today = Math.min(Math.max(0, day.getDay() - 1), 4);
 let clients = [];
 let isFetching = false;
 
