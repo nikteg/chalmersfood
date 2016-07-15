@@ -2,8 +2,8 @@ doctype html
 html
   head
     title Lunch på Chalmers
-    link(href="style.css", rel="stylesheet")
-    link(href="favicon.png", rel="icon", type="image/png")
+    link(href="static/style.css", rel="stylesheet")
+    link(href="static/favicon.png", rel="icon", type="image/png")
     meta(name="viewport", content="width=device-width")
   body
     select(id="day")
@@ -22,4 +22,4 @@ html
             ul
               each food in restaurant.items
                 li= food
-  script(src="main.js")
+  script(src="static/main.js")
