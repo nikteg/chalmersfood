@@ -86,7 +86,7 @@ const restaurants = [
 
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
-app.use(express.static("public"));
+app.use("/static", express.static(`${__dirname}/public`));
 
 const day = new Date();
 const today = Math.min(Math.max(0, day.getDay() - 1), 4);
