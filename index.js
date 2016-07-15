@@ -84,6 +84,7 @@ const restaurants = [
   },
 ];
 
+app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 app.use(express.static("public"));
 
