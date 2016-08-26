@@ -105,12 +105,20 @@ const getData = () => new Promise((resolve, reject) => {
   async.map(restaurants, (r, cb) => {
     request(r.url, (err, resp, body) => {
       if (!err && resp.statusCode === 200) {
-        return cb(null, {
-          name: r.name,
-          items: r.parse(cheerio.load(body, {
-            xmlMode: r.format === "text/xml",
-          })),
-        });
+        try {
+          return cb(null, {
+            name: r.name,
+            items: r.parse(cheerio.load(body, {
+              xmlMode: r.format === "text/xml",
+            })),
+          });
+        } catch (e) {
+          return cb(null, {
+            name: r.name,
+            items: [],
+            error: "Could not parse",
+          });
+        }
       }
 
       return cb(null);

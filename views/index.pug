@@ -16,8 +16,11 @@ html
       each restaurant in data
         li(class="restaurant")
           h3= restaurant.name
-          if restaurant.items == null || restaurant.items.length === 0
-            i Ingen lunch
+          if restaurant.items.length === 0
+            if restaurant.error
+              i= restaurant.error
+            else
+              i Ingen lunch
           else
             ul
               each food in restaurant.items
