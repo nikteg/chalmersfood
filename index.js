@@ -20,12 +20,11 @@ const restaurants = [
 
       const food = $(el2)
         .find("td")
-        .get(1)
+        .eq(1)
         .text();
 
       return `${name} – ${food}`;
-    })
-    .get()).get(),
+    })).get(),
   },
   {
     name: "Einstein",
@@ -57,12 +56,11 @@ const restaurants = [
 
       const food = $(el2)
         .find("td")
-        .get(1)
+        .eq(1)
         .text();
 
       return `${name} – ${food}`;
-    })
-      .get()).get(),
+    })).get(),
   },
   {
     name: "Express",
@@ -75,12 +73,11 @@ const restaurants = [
 
       const food = $(el2)
         .find("td")
-        .get(1)
+        .eq(1)
         .text();
 
       return `${name} – ${food}`;
-    })
-    .get()).get(),
+    })).get(),
   },
 ];
 
