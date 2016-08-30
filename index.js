@@ -85,8 +85,6 @@ app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 app.use("/static", express.static(`${__dirname}/public`));
 
-const day = new Date();
-const today = Math.min(Math.max(0, day.getDay() - 1), 4);
 let clients = [];
 let isFetching = false;
 
@@ -147,6 +145,8 @@ const filterDay = (data, dayIndex) => data.map(r => {
 });
 
 app.get("/", (req, res) => {
+  const day = new Date();
+  const today = Math.min(Math.max(0, day.getDay() - 1), 4);
   const selectedDay = req.query.day || today;
 
   getData().then(data => res.render("index", {
