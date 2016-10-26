@@ -5,7 +5,7 @@ const async = require("async");
 
 const app = express();
 
-const CACHE_LIFE = 12 * 60 * 60 * 1000;
+const CACHE_LIFE = 1 * 60 * 60 * 1000;
 const cache = { date: Date.now(), data: null };
 
 const restaurants = [
@@ -155,5 +155,5 @@ app.get("/", (req, res) => {
   }));
 });
 
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Chalmersfood listening on port ${port}!`));
