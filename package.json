@@ -9,6 +9,9 @@
   },
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "6.9.1"
+  },
   "dependencies": {
     "async": "^2.0.0-rc.6",
     "cheerio": "^0.20.0",
