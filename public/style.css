@@ -45,6 +45,14 @@ h3 {
   padding-bottom: 0.25em;
 }
 
+h3 .date {
+  margin: 0;
+  font-weight: normal;
+  font-style: italic;
+  float: right;
+  font-size: .8em;
+}
+
 #footer {
   position: absolute;
   bottom: 0;
