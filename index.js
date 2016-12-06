@@ -101,11 +101,11 @@ const validResult = (oldResult, result) => {
   // Shallow compare on the items string arrays
   for (let i = 0; i < result.items.length; ++i) {
     if (result.items[i] !== oldResult.items[i]) {
-      return oldResult;
+      return result;
     }
   }
 
-  return result;
+  return oldResult;
 };
 
 const success = (restaurant, items) => ({
