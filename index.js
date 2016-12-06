@@ -89,7 +89,6 @@ let clients = [];
 let isFetching = false;
 
 const validResult = (oldResult, result) => {
-
   // If the old result contains an error, just use the new one
   if (oldResult.error) {
     return result;
@@ -107,7 +106,7 @@ const validResult = (oldResult, result) => {
   }
 
   return result;
-}
+};
 
 const success = (restaurant, items) => ({
   items,
