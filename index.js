@@ -4,6 +4,8 @@ const request = require("request");
 const async = require("async");
 const moment = require("moment");
 
+moment.locale("sv");
+
 const app = express();
 
 const CACHE_LIFE = 1 * 60 * 60 * 1000;

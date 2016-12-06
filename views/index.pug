@@ -16,7 +16,7 @@ html
       each restaurant in data
         li(class="restaurant")
           h3= restaurant.name
-            span(class="date")= "Updated " + restaurant.date
+            span(class="date")= "Hämtad " + restaurant.date
           if restaurant.items.length === 0
             if restaurant.error
               i= restaurant.error
