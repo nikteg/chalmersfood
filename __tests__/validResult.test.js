@@ -24,8 +24,8 @@ describe("validResult", () => {
     expect(validResult(resultWithoutError, resultWithError)).toBe(resultWithoutError);
   });
 
-  it("returns old result on same items, but newer date", () => {
+  it("returns old result on new result with same items", () => {
     expect(validResult(resultWithoutError, resultWithoutErrorNewerDate).date)
-      .toBeLessThanOrEqual(resultWithoutError.date);
+      .toBe(resultWithoutError.date);
   });
 });
