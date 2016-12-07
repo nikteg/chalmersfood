@@ -5,5 +5,8 @@
     "consistent-return": 0,
     "no-console": 0,
     "no-unused-vars": [1, { "argsIgnorePattern": "^(reject|resolve|e(v(en)?t)?)$" }]
+  },
+  "env": {
+    "jest": true
   }
 }

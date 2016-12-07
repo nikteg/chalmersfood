@@ -1,8 +1,10 @@
-const express = require("express");
-const cheerio = require("cheerio");
-const request = require("request");
-const async = require("async");
-const moment = require("moment");
+import express from "express";
+import cheerio from "cheerio";
+import request from "request";
+import async from "async";
+import moment from "moment";
+
+import { validResult, success, fail } from "./food";
 
 moment.locale("sv");
 
@@ -90,39 +92,6 @@ app.use("/static", express.static(`${__dirname}/public`));
 let clients = [];
 let isFetching = false;
 
-const validResult = (oldResult, result) => {
-  // If the old result contains an error, just use the new one
-  if (oldResult.error) {
-    return result;
-  }
-
-  if (result.error) {
-    return oldResult;
-  }
-
-  // Shallow compare on the items string arrays
-  for (let i = 0; i < result.items.length; ++i) {
-    if (result.items[i] !== oldResult.items[i]) {
-      return result;
-    }
-  }
-
-  return oldResult;
-};
-
-const success = (restaurant, items) => ({
-  items,
-  name: restaurant.name,
-  date: Date.now(),
-});
-
-const fail = (restaurant, error) => ({
-  error,
-  name: restaurant.name,
-  items: [],
-  date: Date.now(),
-});
-
 const cache = {
   date: 0,
   data: restaurants.map(restaurant =>
@@ -195,4 +164,4 @@ app.get("/", (req, res) => {
 
 const port = process.env.PORT || 3000;
 app.listen(port, () =>
-  console.log(`Chalmersfood listening on http://localhost:${port}/ !`));
+  console.log(`Chalmersfood listening on http://localhost:${port}/`));
