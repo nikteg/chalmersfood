@@ -2,10 +2,22 @@ import { validResult, success, fail } from "../food";
 
 describe("validResult", () => {
   const resultWithError = fail("Test", "Some error");
-  const resultWithoutError = success("Test", ["Item 1", "Item 2"]);
-  const result2WithoutError = success("Test 2", ["Different item 1", "Different item 2"]);
 
-  const resultWithoutErrorNewerDate = success("Test", ["Item 1", "Item 2"]);
+  const resultWithoutError = success("Test", [
+    ["Item 1", "Item 2"],
+    ["Item 1", "Item 2"],
+  ]);
+
+  const result2WithoutError = success("Test 2", [
+    ["Different item 1", "Different item 2"],
+    ["Different item 1", "Different item 2"],
+  ]);
+
+  const resultWithoutErrorNewerDate = success("Test", [
+    ["Item 1", "Item 2"],
+    ["Item 1", "Item 2"],
+  ]);
+
   resultWithoutErrorNewerDate.date += 3600 * 1000; // 1 hour in the future
 
   it("returns new result on old result error", () => {
