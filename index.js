@@ -17,18 +17,26 @@ const restaurants = [
     name: "Kårresturangen",
     url: "http://intern.chalmerskonferens.se/view/restaurant/karrestaurangen/Veckomeny.rss",
     format: "text/xml",
-    parse: ($) => $("item").map((i, el) => $(el).find("tr").map((j, el2) => {
-      const name = $(el2)
-        .find("b")
-        .text();
+    parse: ($) => {
+      const items = [];
 
-      const food = $(el2)
-        .find("td")
-        .eq(1)
-        .text();
+      $("item").each((itemIndex, item) => items.push($("tr", item).map((trIndex, tr) => {
+        const name = $(tr)
+          .find("b")
+          .text();
 
-      return `${name} – ${food}`;
-    })).get(),
+        const food = $(tr)
+          .find("td")
+          .eq(1)
+          .text();
+
+        // console.log("name", name, "food", food);
+
+        return `${name} – ${food}`;
+      }).get()));
+
+      return items;
+    },
   },
   {
     name: "Einstein",
@@ -44,7 +52,8 @@ const restaurants = [
           .map((j, el2) => $(el2).text())
           .get()
           .map(f => f.trim())
-          .filter(f => f !== "")));
+          .filter(f => f !== ""
+            && f !== "\u200B"))); // \u200B is a Unicode zero-width space, stupid restaurant
 
       return items;
     },
@@ -53,35 +62,51 @@ const restaurants = [
     name: "Linsen",
     url: "http://intern.chalmerskonferens.se/view/restaurant/linsen/RSS%20Feed.rss",
     format: "text/xml",
-    parse: ($) => $("item").map((i, el) => $(el).find("tr").map((j, el2) => {
-      const name = $(el2)
-        .find("b")
-        .text();
+    parse: ($) => {
+      const items = [];
 
-      const food = $(el2)
-        .find("td")
-        .eq(1)
-        .text();
+      $("item").each((itemIndex, item) => items.push($("tr", item).map((trIndex, tr) => {
+        const name = $(tr)
+          .find("b")
+          .text();
 
-      return `${name} – ${food}`;
-    })).get(),
+        const food = $(tr)
+          .find("td")
+          .eq(1)
+          .text();
+
+        // console.log("name", name, "food", food);
+
+        return `${name} – ${food}`;
+      }).get()));
+
+      return items;
+    },
   },
   {
     name: "Express",
     url: "http://intern.chalmerskonferens.se/view/restaurant/express/Veckomeny.rss",
     format: "text/xml",
-    parse: ($) => $("item").map((i, el) => $(el).find("tr").map((j, el2) => {
-      const name = $(el2)
-        .find("b")
-        .text();
+    parse: ($) => {
+      const items = [];
 
-      const food = $(el2)
-        .find("td")
-        .eq(1)
-        .text();
+      $("item").each((itemIndex, item) => items.push($("tr", item).map((trIndex, tr) => {
+        const name = $(tr)
+          .find("b")
+          .text();
 
-      return `${name} – ${food}`;
-    })).get(),
+        const food = $(tr)
+          .find("td")
+          .eq(1)
+          .text();
+
+        // console.log("name", name, "food", food);
+
+        return `${name} – ${food}`;
+      }).get()));
+
+      return items;
+    },
   },
 ];
 
