@@ -12,12 +12,14 @@ export const validResult = (oldResult, result) => {
   if (result.items.length !== oldResult.items.length) {
     return result;
   }
+
   for (let i = 0; i < result.items.length; ++i) {
     if (result.items[i].length !== oldResult.items[i].length) {
       return result;
     }
+
     for (let j = 0; j < result.items[i].length; ++j) {
-      if (!oldResult.items[i][j] || result.items[i][j] !== oldResult.items[i][j]) {
+      if (result.items[i][j] !== oldResult.items[i][j]) {
         return result;
       }
     }
