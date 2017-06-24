@@ -15,28 +15,20 @@ const CACHE_LIFE = 1 * 60 * 60 * 1000;
 const restaurants = [
   {
     name: "Kårresturangen",
-    url: "http://intern.chalmerskonferens.se/view/restaurant/karrestaurangen/Veckomeny.rss",
+    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/gethtmlweek?restaurantid=5",
     format: "text/xml",
-    parse: ($) => {
-      const items = [];
-
-      $("item").each((itemIndex, item) => items.push($("tr", item).map((trIndex, tr) => {
-        const name = $(tr)
-          .find("b")
+    parse: ($) => $(".swedish-menu .week-day").map((i, item) =>
+      $(item).find(".dish").map((j, div) => {
+        const name = $(div)
+          .find(".dish-type")
           .text();
 
-        const food = $(tr)
-          .find("td")
-          .eq(1)
+        const food = $(div)
+          .find(".dish-name")
           .text();
-
-        // console.log("name", name, "food", food);
 
         return `${name} – ${food}`;
-      }).get()));
-
-      return items;
-    },
+      })),
   },
   {
     name: "Einstein",
@@ -85,28 +77,20 @@ const restaurants = [
   },
   {
     name: "Express",
-    url: "http://intern.chalmerskonferens.se/view/restaurant/express/Veckomeny.rss",
+    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/gethtmlweek?restaurantid=7",
     format: "text/xml",
-    parse: ($) => {
-      const items = [];
-
-      $("item").each((itemIndex, item) => items.push($("tr", item).map((trIndex, tr) => {
-        const name = $(tr)
-          .find("b")
+    parse: ($) => $(".swedish-menu .week-day").map((i, item) =>
+      $(item).find(".dish").map((j, div) => {
+        const name = $(div)
+          .find(".dish-type")
           .text();
 
-        const food = $(tr)
-          .find("td")
-          .eq(1)
+        const food = $(div)
+          .find(".dish-name")
           .text();
-
-        // console.log("name", name, "food", food);
 
         return `${name} – ${food}`;
-      }).get()));
-
-      return items;
-    },
+      })),
   },
 ];
 
