@@ -34,21 +34,16 @@ const restaurants = [
     name: "Einstein",
     url: "http://www.butlercatering.se/print/6",
     format: "text/html",
-    parse: ($) => {
-      const items = [];
+    parse: ($) => $(".node-lunchmeny .content .field-day").map((i, day) =>
+      $(day).find("p")
+        .map((j, d) => d.children[0])
+        .filter((j, d) => {
+          const t = d.data.trim();
 
-      $(".node-lunchmeny .content .field-day").map((i, el) =>
-        items.push(
-          $(el)
-          .find("p")
-          .map((j, el2) => $(el2).text())
-          .get()
-          .map(f => f.trim())
-          .filter(f => f !== ""
-            && f !== "\u200B"))); // \u200B is a Unicode zero-width space, stupid restaurant
-
-      return items;
-    },
+           // \u200B is a Unicode zero-width space
+          return t !== "" && t !== "\u200B";
+        })
+        .map((j, d) => d.data.trim())),
   },
   {
     name: "Linsen",
