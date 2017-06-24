@@ -67,8 +67,6 @@ const restaurants = [
           .eq(1)
           .text();
 
-        // console.log("name", name, "food", food);
-
         return `${name} – ${food}`;
       }).get()));
 
