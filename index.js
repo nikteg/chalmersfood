@@ -12,23 +12,29 @@ const app = express();
 
 const CACHE_LIFE = 1 * 60 * 60 * 1000;
 
+const flatMap = (f, xs) => xs.reduce((acc, x) => acc.concat(f(x)), []);
+
 const restaurants = [
   {
     name: "Kårresturangen",
-    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/gethtmlweek?restaurantid=5",
-    format: "text/xml",
-    parse: ($) => $(".swedish-menu .week-day").map((i, item) =>
-      $(item).find(".dish").map((j, div) => {
-        const name = $(div)
-          .find(".dish-type")
-          .text();
-
-        const food = $(div)
-          .find(".dish-name")
-          .text();
-
-        return `${name} – ${food}`;
-      })),
+    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=5",
+    format: "application/json",
+    parse: (json) => json.menus.map((menu) => flatMap((category) => category.recipes.map((recipe) =>
+            `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
+  },
+  {
+    name: "Linsen",
+    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=33",
+    format: "application/json",
+    parse: (json) => json.menus.map((menu) => flatMap((category) => category.recipes.map((recipe) =>
+            `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
+  },
+  {
+    name: "Express",
+    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=7",
+    format: "application/json",
+    parse: (json) => json.menus.map((menu) => flatMap((category) => category.recipes.map((recipe) =>
+            `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
   },
   {
     name: "Einstein",
@@ -40,50 +46,10 @@ const restaurants = [
         .filter((j, d) => {
           const t = d.data.trim();
 
-           // \u200B is a Unicode zero-width space
+            // \u200B is a Unicode zero-width space
           return t !== "" && t !== "\u200B";
         })
         .map((j, d) => d.data.trim())),
-  },
-  {
-    name: "Linsen",
-    url: "http://intern.chalmerskonferens.se/view/restaurant/linsen/RSS%20Feed.rss",
-    format: "text/xml",
-    parse: ($) => {
-      const items = [];
-
-      $("item").each((itemIndex, item) => items.push($("tr", item).map((trIndex, tr) => {
-        const name = $(tr)
-          .find("b")
-          .text();
-
-        const food = $(tr)
-          .find("td")
-          .eq(1)
-          .text();
-
-        return `${name} – ${food}`;
-      }).get()));
-
-      return items;
-    },
-  },
-  {
-    name: "Express",
-    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/gethtmlweek?restaurantid=7",
-    format: "text/xml",
-    parse: ($) => $(".swedish-menu .week-day").map((i, item) =>
-      $(item).find(".dish").map((j, div) => {
-        const name = $(div)
-          .find(".dish-type")
-          .text();
-
-        const food = $(div)
-          .find(".dish-name")
-          .text();
-
-        return `${name} – ${food}`;
-      })),
   },
 ];
 
@@ -98,6 +64,22 @@ const cache = {
   date: 0,
   data: restaurants.map(restaurant =>
     fail(restaurant, "Not loaded")),
+};
+
+const runParser = (format, body) => {
+  switch (format) {
+    case "application/json":
+      try {
+        return JSON.parse(body);
+      } catch (e) {
+        return {};
+      }
+    case "text/html":
+    case "text/xml":
+      return cheerio.load(body, { xmlMode: format === "text/html" });
+    default:
+      return body;
+  }
 };
 
 const getData = () => new Promise((resolve, reject) => {
@@ -116,12 +98,11 @@ const getData = () => new Promise((resolve, reject) => {
     request(r.url, (err, resp, body) => {
       if (!err && resp.statusCode === 200) {
         try {
-          const items = r.parse(cheerio.load(body, {
-            xmlMode: r.format === "text/xml",
-          }));
+          const items = r.parse(runParser(r.format, body));
 
           return process.nextTick(cb, null, success(r, items));
         } catch (e) {
+          console.error(e);
           return cb(null, fail(r, "Could not parse"));
         }
       }
