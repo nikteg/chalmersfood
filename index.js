@@ -37,6 +37,13 @@ const restaurants = [
             `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
   },
   {
+    name: "S.M.A.K.",
+    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=42",
+    format: "application/json",
+    parse: (json) => json.menus.map((menu) => flatMap((category) => category.recipes.map((recipe) =>
+            `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
+  },
+  {
     name: "Einstein",
     url: "http://www.butlercatering.se/print/6",
     format: "text/html",
