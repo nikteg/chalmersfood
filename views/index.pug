@@ -6,12 +6,14 @@ html
     link(href="static/favicon.png", rel="icon", type="image/png")
     meta(name="viewport", content="width=device-width")
   body
-    select(id="day")
-      each day, index in ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"]
-        if index == selectedDay
-          option(value=index, selected="selected")= day
-        else
-          option(value=index)= day
+    header
+      h1= "Vecka " + currentWeek
+      select(id="day")
+        each day, index in ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"]
+          if index == selectedDay
+            option(value=index, selected="selected")= day
+          else
+            option(value=index)= day
     ul
       each restaurant in data
         li(class="restaurant")

@@ -14,6 +14,13 @@ const CACHE_LIFE = 1 * 60 * 60 * 1000;
 
 const flatMap = (f, xs) => xs.reduce((acc, x) => acc.concat(f(x)), []);
 
+const weekOfYear = (date) => {
+  const d = new Date(+date);
+  d.setHours(0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  return Math.ceil((((d - new Date(d.getFullYear(), 0, 1)) / 8.64e7) + 1) / 7);
+};
+
 const restaurants = [
   {
     name: "Kårresturangen",
@@ -145,10 +152,12 @@ app.get("/", (req, res) => {
   const day = new Date();
   const today = Math.min(Math.max(0, day.getDay() - 1), 4);
   const selectedDay = req.query.day || today;
+  const currentWeek = weekOfYear(day);
 
   getData().then(data => res.render("index", {
     data: filterDay(data, selectedDay).map(formatDate),
     selectedDay,
+    currentWeek,
   }));
 });
 

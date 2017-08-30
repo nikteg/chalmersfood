@@ -12,6 +12,17 @@ body {
   padding: 1em;
 }
 
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: .5em 0;
+}
+
+h1 {
+  margin: 0 .5em 0 0;
+}
+
 select {
   font: 18px/1.5em sans-serif;
 }
@@ -33,10 +44,6 @@ ul {
 li.restaurant li {
   border-bottom: 1px solid #dedede;
   padding: 0.25em 0;
-}
-
-h1 {
-  margin: 0.25em 0 0.5em;
 }
 
 h3 {
