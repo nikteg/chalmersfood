@@ -1,10 +1,23 @@
-export const validResult = (oldResult, result) => {
+import { Restaurant } from "./restaurants";
+
+export interface RestaurantResult {
+  items: string[][];
+  name: string;
+  date: number;
+}
+
+export interface RestaurantResultWithError extends RestaurantResult {
+  error: string;
+}
+
+export const validResult = (oldResult: RestaurantResult | RestaurantResultWithError,
+    result: RestaurantResult | RestaurantResultWithError) => {
   // If the old result contains an error, just use the new one
-  if (oldResult.error) {
+  if ((oldResult as RestaurantResultWithError).error) {
     return result;
   }
 
-  if (result.error) {
+  if ((result as RestaurantResultWithError).error) {
     return oldResult;
   }
 
@@ -28,13 +41,13 @@ export const validResult = (oldResult, result) => {
   return oldResult;
 };
 
-export const success = (restaurant, items) => ({
+export const success = (restaurant: Restaurant, items: string[][]): RestaurantResult => ({
   items,
   name: restaurant.name,
   date: Date.now(),
 });
 
-export const fail = (restaurant, error) => ({
+export const fail = (restaurant: Restaurant, error: string): RestaurantResultWithError => ({
   error,
   name: restaurant.name,
   items: [],
