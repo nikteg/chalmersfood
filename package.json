@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register -F src/index.ts",
-    "dev": "ts-node -r tsconfig-paths/register src/index.ts",
+    "dev": "nodemon",
     "test": "jest"
   },
   "author": "",
