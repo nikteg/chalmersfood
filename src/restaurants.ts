@@ -13,9 +13,47 @@ export type PlainFormat = "text/plain";
 
 export type Format = JSONFormat | HTMLFormat | XMLFormat | PlainFormat;
 
-export interface JSONRestaurant extends BaseRestaurant {
+export namespace CarbonCloud {
+  export interface DisplayName {
+    typeID: number;
+    displayName: string;
+  }
+
+  export interface Allergen {
+    id: number;
+    imageURLBright: string;
+    imageURLDark: string;
+  }
+
+  export interface Recipe {
+    displayNames: DisplayName[];
+    cO2e: string;
+    cO2eURL: string;
+    allergens: Allergen[];
+    price: number;
+  }
+
+  export interface RecipeCategory {
+    name: string;
+    nameEnglish: string;
+    id: number;
+    recipes: Recipe[];
+  }
+
+  export interface Menu {
+    menuDate: Date;
+    recipeCategories: RecipeCategory[];
+  }
+
+  export interface RestaurantInput {
+    menus: Menu[];
+  }
+
+}
+
+export interface JSONRestaurant<T> extends BaseRestaurant {
   format: JSONFormat;
-  map: (json: { [key: string]: any }) => string[][];
+  map: (input: T) => string[][];
 }
 
 export interface HTMLRestaurant extends BaseRestaurant {
@@ -33,37 +71,38 @@ export interface PlainRestaurant extends BaseRestaurant {
   map: (text: string) => string[][];
 }
 
-export type Restaurant = JSONRestaurant | HTMLRestaurant | XMLRestaurant | PlainRestaurant;
+export type Restaurant = JSONRestaurant<any> | HTMLRestaurant | XMLRestaurant | PlainRestaurant;
+
+function jsonRestaurant<T>(name: string, url: string, map: (input: T) => string[][]): JSONRestaurant<T> {
+  return {
+    name,
+    url,
+    format: "application/json",
+    map,
+  }
+}
+
+function displayRecipeCategory(category: CarbonCloud.RecipeCategory) {
+  return category.recipes.map((recipe) => `${category.name} – ${recipe.displayNames[0].displayName}`)
+}
 
 export const restaurants = [
-  <JSONRestaurant>{
-    name: "Kårresturangen",
-    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=5",
-    format: "application/json",
-    map: (json) => json.menus.map((menu: any) => flatMap((category: any) => category.recipes.map((recipe: any) =>
-            `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
-  },
-  <JSONRestaurant>{
-    name: "Linsen",
-    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=33",
-    format: "application/json",
-    map: (json) => json.menus.map((menu: any) => flatMap((category: any) => category.recipes.map((recipe: any) =>
-            `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
-  },
-  <JSONRestaurant>{
-    name: "Express",
-    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=7",
-    format: "application/json",
-    map: (json) => json.menus.map((menu: any) => flatMap((category: any) => category.recipes.map((recipe: any) =>
-            `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
-  },
-  <JSONRestaurant>{
-    name: "S.M.A.K.",
-    url: "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=42",
-    format: "application/json",
-    map: (json) => json.menus.map((menu: any) => flatMap((category: any) => category.recipes.map((recipe: any) =>
-            `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
-  },
+  jsonRestaurant<CarbonCloud.RestaurantInput>(
+    "Kårresturangen",
+    "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=5",
+    (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
+  jsonRestaurant<CarbonCloud.RestaurantInput>(
+    "Linsen",
+    "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=33",
+    (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
+  jsonRestaurant<CarbonCloud.RestaurantInput>(
+    "Express",
+    "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=7",
+    (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
+  jsonRestaurant<CarbonCloud.RestaurantInput>(
+    "S.M.A.K.",
+    "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=42",
+    (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
   <HTMLRestaurant>{
     name: "Einstein",
     url: "http://www.butlercatering.se/print/6",
@@ -74,7 +113,7 @@ export const restaurants = [
         .filter((j, d) => {
           const t = (d as any).data.trim();
 
-            // \u200B is a Unicode zero-width space
+          // \u200B is a Unicode zero-width space
           return t !== "" && t !== "\u200B";
         })
         .map((j, d) => (d as any).data.trim())

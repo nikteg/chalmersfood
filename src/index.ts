@@ -7,7 +7,7 @@ import { RxHR } from "@akanass/rx-http-request";
 
 import { validResult, success, fail, RestaurantResultWithError, RestaurantResult } from "food";
 import { restaurants, Restaurant, JSONRestaurant } from "restaurants";
-import { weekOfYear, runParser } from "utils";
+import { weekOfYear, parseRestaurantBody } from "utils";
 import { CACHE_LIFE } from "config";
 
 moment.locale("sv");
@@ -35,10 +35,7 @@ const data$ = Rx.Observable.from(restaurants)
   .map(({ restaurant, data }): RestaurantResult | RestaurantResultWithError => {
     if (data.response.statusCode === 200) {
       try {
-        const parsed = runParser(restaurant.format, data.body);
-
-        // TODO: Figure out better types
-        const items = (<any>restaurant).map(parsed);
+        const items = parseRestaurantBody(restaurant, data.body);
 
         return success(restaurant, items);
       } catch (error) {
