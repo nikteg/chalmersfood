@@ -5,18 +5,18 @@ import * as moment from "moment";
 import * as Rx from "@reactivex/rxjs";
 import { RxHR } from "@akanass/rx-http-request";
 
-import { validResult, success, fail, RestaurantResultWithError, RestaurantResult } from "./food";
-import { restaurants, Restaurant } from "./restaurants";
-import { weekOfYear, runParser } from "./util";
-import { CACHE_LIFE } from "./config";
+import { validResult, success, fail, RestaurantResultWithError, RestaurantResult } from "food";
+import { restaurants, Restaurant, JSONRestaurant } from "restaurants";
+import { weekOfYear, runParser } from "utils";
+import { CACHE_LIFE } from "config";
 
 moment.locale("sv");
 
 const app = express();
 
-app.set("views", `${__dirname}/views`);
+app.set("views", `${__dirname}/../views`);
 app.set("view engine", "pug");
-app.use("/static", express.static(`${__dirname}/public`));
+app.use("/static", express.static(`${__dirname}/../public`));
 
 let clients: ((data: (RestaurantResult | RestaurantResultWithError)[]) => void)[] = [];
 let isFetching = false;
@@ -31,17 +31,14 @@ const cache: {
 }
 
 const data$ = Rx.Observable.from(restaurants)
-  .flatMap((restaurant) => RxHR.get(restaurant.url), (restaurant, data) => ({ restaurant, data }))
+  .concatMap((restaurant) => RxHR.get(restaurant.url), (restaurant, data) => ({ restaurant, data }))
   .map(({ restaurant, data }): RestaurantResult | RestaurantResultWithError => {
     if (data.response.statusCode === 200) {
       try {
         const parsed = runParser(restaurant.format, data.body);
 
-        let items: string[][] = [];
-
-        if (typeof parsed === "object") {
-          items = restaurant.map(parsed);
-        }
+        // TODO: Figure out better types
+        const items = (<any>restaurant).map(parsed);
 
         return success(restaurant, items);
       } catch (error) {

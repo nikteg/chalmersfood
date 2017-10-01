@@ -1,4 +1,4 @@
-import { Restaurant } from "./restaurants";
+import { Restaurant } from "restaurants";
 
 export interface RestaurantResult {
   items: string[][];

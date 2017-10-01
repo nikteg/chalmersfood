@@ -1,4 +1,4 @@
-import { flatMap } from "./util";
+import { flatMap } from "utils";
 
 export interface BaseRestaurant {
   name: string;
@@ -64,19 +64,21 @@ export const restaurants = [
     map: (json) => json.menus.map((menu: any) => flatMap((category: any) => category.recipes.map((recipe: any) =>
             `${category.name} – ${recipe.displayNames[0].displayName}`), menu.recipeCategories)),
   },
-  // <HTMLRestaurant>{
-  //   name: "Einstein",
-  //   url: "http://www.butlercatering.se/print/6",
-  //   format: "text/html",
-  //   map: ($) => $(".node-lunchmeny .content .field-day").map((i, day) =>
-  //     $(day).find("p")
-  //       .map((j, d) => d.children[0])
-  //       .filter((j, d) => {
-  //         const t = d.data.trim();
+  <HTMLRestaurant>{
+    name: "Einstein",
+    url: "http://www.butlercatering.se/print/6",
+    format: "text/html",
+    map: ($) => $(".node-lunchmeny .content .field-day").get().map((day) => {
+      return $(day).find("p")
+        .map((j, d) => d.children[0])
+        .filter((j, d) => {
+          const t = (d as any).data.trim();
 
-  //           // \u200B is a Unicode zero-width space
-  //         return t !== "" && t !== "\u200B";
-  //       })
-  //       .map((j, d) => d.data.trim())).toArray(),
-  // },
+            // \u200B is a Unicode zero-width space
+          return t !== "" && t !== "\u200B";
+        })
+        .map((j, d) => (d as any).data.trim())
+        .get();
+    }),
+  },
 ];

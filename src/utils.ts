@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import { Format } from "./restaurants";
+import { Format } from "restaurants";
 
 export function flatMap(f: (...args: any[]) => any, xs: any[]) {
   return xs.reduce((acc, x) => acc.concat(f(x)), []);
