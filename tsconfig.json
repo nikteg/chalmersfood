@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "strict": true,
+        "target": "esnext",
+        "baseUrl": "./src"
+    },
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}
