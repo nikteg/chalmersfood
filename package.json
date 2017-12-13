@@ -23,7 +23,8 @@
     "request": "^2.83.0",
     "rxjs": "^5.4.3",
     "ts-node": "^3.3.0",
-    "typescript": "^2.5.3"
+    "typescript": "^2.5.3",
+    "tsconfig-paths": "^2.3.0"
   },
   "devDependencies": {
     "@types/cheerio": "^0.22.2",
@@ -34,8 +35,7 @@
     "@types/request": "^2.0.3",
     "jest": "^17.0.3",
     "nodemon": "^1.12.1",
-    "ts-jest": "^21.0.1",
-    "tsconfig-paths": "^2.3.0"
+    "ts-jest": "^21.0.1"
   },
   "jest": {
     "transform": {
