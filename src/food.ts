@@ -10,8 +10,8 @@ export interface RestaurantResultWithError extends RestaurantResult {
   error: string;
 }
 
-export function isResultWithError(result : RestaurantResult | RestaurantResultWithError): result is RestaurantResultWithError {
-  return (result as RestaurantResultWithError).error != null
+export function isResultWithError(result : RestaurantResult | RestaurantResultWithError) {
+  return result && (result as RestaurantResultWithError).error != null
 }
 
 export const validResult = (oldResult: RestaurantResult | RestaurantResultWithError,
