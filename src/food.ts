@@ -4,18 +4,14 @@ export interface RestaurantResult {
   items: string[][];
   name: string;
   date: number;
+  error?: string;
 }
 
-export interface RestaurantResultWithError extends RestaurantResult {
-  error: string;
+export function isResultWithError(result : RestaurantResult) {
+  return result.error != null
 }
 
-export function isResultWithError(result : RestaurantResult | RestaurantResultWithError) {
-  return result && (result as RestaurantResultWithError).error != null
-}
-
-export const validResult = (oldResult: RestaurantResult | RestaurantResultWithError,
-    result: RestaurantResult | RestaurantResultWithError) => {
+export const validResult = (oldResult: RestaurantResult, result: RestaurantResult) => {
   // If the old result contains an error, just use the new one
   if (isResultWithError(oldResult)) {
     return result;
@@ -51,7 +47,7 @@ export const success = (restaurant: Restaurant, items: string[][]): RestaurantRe
   date: Date.now(),
 });
 
-export const fail = (restaurant: Restaurant, error: string): RestaurantResultWithError => ({
+export const fail = (restaurant: Restaurant, error: string): RestaurantResult => ({
   error,
   name: restaurant.name,
   items: [],

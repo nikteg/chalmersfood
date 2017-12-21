@@ -5,9 +5,9 @@ import * as moment from "moment";
 import * as Rx from "@reactivex/rxjs";
 import { RxHR } from "@akanass/rx-http-request";
 
-import { validResult, success, fail, RestaurantResultWithError, RestaurantResult } from "food";
+import { validResult, success, fail, RestaurantResult } from "food";
 import { restaurants, Restaurant, JSONRestaurant } from "restaurants";
-import { weekOfYear, parseRestaurantBody } from "utils";
+import { weekOfYear, safeParseRestaurantBody } from "utils";
 import { CACHE_LIFE } from "config";
 
 moment.locale("sv");
@@ -18,12 +18,12 @@ app.set("views", `${__dirname}/../views`);
 app.set("view engine", "pug");
 app.use("/static", express.static(`${__dirname}/../public`));
 
-let clients: ((data: (RestaurantResult | RestaurantResultWithError)[]) => void)[] = [];
+let clients: ((data: RestaurantResult[]) => void)[] = [];
 let isFetching = false;
 
 const cache: {
   date: number;
-  data: (RestaurantResult | RestaurantResultWithError)[];
+  data: RestaurantResult[];
 } = {
   date: 0,
   data: restaurants.map(restaurant =>
@@ -32,10 +32,10 @@ const cache: {
 
 const data$ = Rx.Observable.from(restaurants)
   .concatMap((restaurant) => RxHR.get(restaurant.url), (restaurant, data) => ({ restaurant, data }))
-  .map(({ restaurant, data }): RestaurantResult | RestaurantResultWithError => {
+  .map(({ restaurant, data }): RestaurantResult => {
     if (data.response.statusCode === 200) {
       try {
-        const items = parseRestaurantBody(restaurant, data.body);
+        const items = safeParseRestaurantBody(restaurant, data.body);
 
         return success(restaurant, items);
       } catch (error) {
@@ -48,7 +48,7 @@ const data$ = Rx.Observable.from(restaurants)
     return fail(restaurant, "Could not fetch");
   }).toArray();
 
-const getData = () => new Promise<(RestaurantResult | RestaurantResultWithError)[]>((resolve, reject) => {
+const getData = () => new Promise<RestaurantResult[]>((resolve, reject) => {
   if (Date.now() < cache.date + CACHE_LIFE) {
     return resolve(cache.data);
   }
@@ -72,13 +72,13 @@ const getData = () => new Promise<(RestaurantResult | RestaurantResultWithError)
   });
 });
 
-const filterDay = (data: (RestaurantResult | RestaurantResultWithError)[], dayIndex: number) => data.map(r => {
+const filterDay = (data: RestaurantResult[], dayIndex: number) => data.map(r => {
   const items = r.items[dayIndex] || [];
 
   return Object.assign({}, r, { items });
 });
 
-const formatDate = (restaurant: RestaurantResult | RestaurantResultWithError) =>
+const formatDate = (restaurant: RestaurantResult) =>
   Object.assign(restaurant, { date: moment(restaurant.date).fromNow() });
 
 app.get("/", (req, res) => {

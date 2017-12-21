@@ -14,7 +14,17 @@ export function weekOfYear(date: Date) {
   return Math.ceil((((d.getTime() - new Date(d.getFullYear(), 0, 1).getTime()) / 8.64e7) + 1) / 7);
 }
 
-export function parseRestaurantBody(restaurant: Restaurant, body: string): string[][] {
+export function safeParseRestaurantBody(restaurant: Restaurant, body: string): string[][] {
+  const result = parseRestaurantBody(restaurant, body);
+
+  if (Array.isArray(result)) {
+    return result;
+  }
+
+  return [];
+}
+
+function parseRestaurantBody(restaurant: Restaurant, body: string) {
   switch (restaurant.format) {
     case "application/json":
       return restaurant.map(JSON.parse(body))

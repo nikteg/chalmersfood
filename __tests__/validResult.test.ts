@@ -1,25 +1,30 @@
-import { validResult, success, fail } from "../food";
+import { validResult, success, fail } from "../src/food";
+import { jsonRestaurant } from "../src/restaurants";
+
+function noopFormat(): string[][] {
+  return [];
+}
 
 describe("validResult", () => {
-  const resultWithError = fail("Test", "Some error");
+  const resultWithError = fail(jsonRestaurant("Test", "", noopFormat), "Some error");
 
-  const resultWithoutError = success("Test", [
+  const resultWithoutError = success(jsonRestaurant("Test", "", noopFormat), [
     ["Item 1", "Item 2"],
     ["Item 1", "Item 3"],
   ]);
 
-  const result2WithoutError = success("Test 2", [
+  const result2WithoutError = success(jsonRestaurant("Test", "", noopFormat), [
     ["Different item 1", "Different item 2"],
     ["Different item 3", "Different item 2"],
   ]);
 
-  const result3WithoutError = success("Test 3", [
+  const result3WithoutError = success(jsonRestaurant("Test", "", noopFormat), [
     ["Item 1", "Item 2"],
     ["Item 1", "Item 3"],
     ["Item 1", "Item 1"],
   ]);
 
-  const resultWithoutErrorNewerDate = success("Test", [
+  const resultWithoutErrorNewerDate = success(jsonRestaurant("Test", "", noopFormat), [
     ["Item 1", "Item 2"],
     ["Item 1", "Item 3"],
   ]);

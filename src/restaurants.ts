@@ -1,4 +1,4 @@
-import { flatMap } from "utils";
+import { flatMap } from "./utils";
 
 export interface BaseRestaurant {
   name: string;
@@ -73,7 +73,7 @@ export interface PlainRestaurant extends BaseRestaurant {
 
 export type Restaurant = JSONRestaurant<any> | HTMLRestaurant | XMLRestaurant | PlainRestaurant;
 
-function jsonRestaurant<T>(name: string, url: string, map: (input: T) => string[][]): JSONRestaurant<T> {
+export function jsonRestaurant<T>(name: string, url: string, map: (input: T) => string[][]): JSONRestaurant<T> {
   return {
     name,
     url,
@@ -91,10 +91,10 @@ export const restaurants = [
     "Kårresturangen",
     "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=5",
     (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
-  // jsonRestaurant<CarbonCloud.RestaurantInput>(
-  //   "Linsen",
-  //   "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=33",
-  //   (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
+  jsonRestaurant<CarbonCloud.RestaurantInput>(
+    "Linsen (OBS: Trasig! Ger måndagens lunch varje dag)",
+    "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=33",
+    (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Express",
     "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=7",
