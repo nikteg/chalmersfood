@@ -7,8 +7,8 @@ export interface RestaurantResult {
   error?: string;
 }
 
-export function isResultWithError(result : RestaurantResult) {
-  return result.error != null
+export function isResultWithError(result: RestaurantResult) {
+  return result.error != null;
 }
 
 export const validResult = (oldResult: RestaurantResult, result: RestaurantResult) => {

@@ -41,11 +41,11 @@ const data$ = Rx.Observable.from(restaurants)
       } catch (error) {
         console.error(error);
 
-        return fail(restaurant, "Could not parse");
+        return fail(restaurant, "Kunde inte hantera menyn");
       }
     }
 
-    return fail(restaurant, "Could not fetch");
+    return fail(restaurant, "Kunde inte hämta menyn");
   }).toArray();
 
 const getData = () => new Promise<RestaurantResult[]>((resolve, reject) => {
@@ -62,7 +62,7 @@ const getData = () => new Promise<RestaurantResult[]>((resolve, reject) => {
 
   data$.first().subscribe((results) => {
     cache.date = Date.now();
-    cache.data = results.map((result, i) => validResult(cache.data[i], result));
+    cache.data = results.map((result, i) => validResult(cache.data[i] || { error: "Trasig cache", items: [] }, result));
 
     isFetching = false;
 
