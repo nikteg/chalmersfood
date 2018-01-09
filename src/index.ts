@@ -39,9 +39,9 @@ const foodItems$ = Rx.Observable.from(restaurants)
   })
   .scan((acc, item) => [...acc, item], [])
   .last()
+  .do(() => lastFetch = new Date())
   .publishReplay(1, CACHE_LIFE)
   .refCount()
-  .do(() => lastFetch = new Date())
 
 const filterDay = (data: RestaurantResult[], dayIndex: number) => data.map(r => {
   const items = r.items[dayIndex] || [];
