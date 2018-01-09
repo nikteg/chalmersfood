@@ -91,10 +91,10 @@ export const restaurants = [
     "Kårresturangen",
     "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=5",
     (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
-  jsonRestaurant<CarbonCloud.RestaurantInput>(
-    "Linsen (OBS: Trasig! Ger måndagens lunch varje dag)",
-    "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=33",
-    (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
+  // jsonRestaurant<CarbonCloud.RestaurantInput>(
+  //   "Linsen",
+  //   "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=33",
+  //   (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Express",
     "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=7",

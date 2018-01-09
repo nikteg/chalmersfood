@@ -18,7 +18,6 @@ html
       each restaurant in data
         li(class="restaurant")
           h3= restaurant.name
-            span(class="date")= "Ändrades " + restaurant.date
           if restaurant.items.length === 0
             if restaurant.error
               i= restaurant.error
@@ -28,4 +27,5 @@ html
             ul
               each food in restaurant.items
                 li= food
+    footer= "Uppdaterad " + lastFetch
   script(src="static/main.js")
