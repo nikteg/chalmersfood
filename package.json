@@ -6,7 +6,8 @@
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register -F src/index.ts",
     "dev": "nodemon",
-    "test": "jest"
+    "test": "jest",
+    "screenshot": "node capture.js"
   },
   "author": "",
   "license": "ISC",
@@ -35,6 +36,7 @@
     "@types/request": "^2.0.3",
     "jest": "^17.0.3",
     "nodemon": "^1.12.1",
+    "puppeteer": "^1.7.0",
     "ts-jest": "^21.0.1"
   },
   "jest": {
