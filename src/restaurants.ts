@@ -105,7 +105,7 @@ export const restaurants = [
     (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
   <HTMLRestaurant>{
     name: "Einstein",
-    url: "http://www.butlercatering.se/print/6",
+    url: "http://www.butlercatering.se/print/11",
     format: "text/html",
     map: ($) => $(".node-lunchmeny .content .field-day").get().map((day) => {
       return $(day).find("p")
