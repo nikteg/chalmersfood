@@ -1,16 +1,15 @@
 import * as express from "express";
-import * as request from "request";
-import * as moment from "moment";
 
 import * as Rx from "@reactivex/rxjs";
 import { RxHR } from "@akanass/rx-http-request";
 
 import { success, fail, RestaurantResult } from "food";
-import { restaurants, Restaurant, JSONRestaurant } from "restaurants";
+import { restaurants } from "restaurants";
 import { weekOfYear, safeParseRestaurantBody } from "utils";
 import { CACHE_LIFE } from "config";
 
-moment.locale("sv");
+import { formatDistance } from "date-fns";
+import { sv } from "date-fns/locale";
 
 const app = express();
 
@@ -20,34 +19,41 @@ app.use("/static", express.static(`${__dirname}/../public`));
 
 let lastFetch = new Date();
 
-const foodItems$ = Rx.Observable.from(restaurants)
-  .concatMap((restaurant) => RxHR.get(restaurant.url), (restaurant, data) => ({ restaurant, data }))
-  .map(({ restaurant, data }) => {
-    if (data.response.statusCode === 200) {
-      try {
-        const items = safeParseRestaurantBody(restaurant, data.body);
+const createFoodStream = () =>
+  Rx.Observable.from(restaurants)
+    .concatMap(
+      restaurant => RxHR.get(restaurant.url),
+      (restaurant, data) => ({ restaurant, data })
+    )
+    .map(({ restaurant, data }) => {
+      if (data.response.statusCode === 200) {
+        try {
+          const items = safeParseRestaurantBody(restaurant, data.body);
 
-        return success(restaurant, items);
-      } catch (error) {
-        console.error(error);
+          return success(restaurant, items);
+        } catch (error) {
+          console.error(error);
 
-        return fail(restaurant, "Kunde inte hantera menyn");
+          return fail(restaurant, "Kunde inte hantera menyn");
+        }
       }
-    }
 
-    return fail(restaurant, "Kunde inte hämta menyn");
-  })
-  .scan((acc, item) => [...acc, item], [])
-  .last()
-  .do(() => lastFetch = new Date())
-  .publishReplay(1, CACHE_LIFE)
-  .refCount()
+      return fail(restaurant, "Kunde inte hämta menyn");
+    })
+    .scan((acc, item) => [...acc, item], [])
+    .last()
+    .do(() => (lastFetch = new Date()))
+    .publishReplay(1, CACHE_LIFE)
+    .refCount();
 
-const filterDay = (data: RestaurantResult[], dayIndex: number) => data.map(r => {
-  const items = r.items[dayIndex] || [];
+const filterDay = (data: RestaurantResult[], dayIndex: number) =>
+  data.map(r => {
+    const items = r.items[dayIndex] || [];
 
-  return Object.assign({}, r, { items });
-});
+    return Object.assign({}, r, { items });
+  });
+
+let foodItems$: Rx.Observable<RestaurantResult[]> | null = createFoodStream();
 
 app.get("/", (req, res) => {
   const day = new Date();
@@ -55,17 +61,27 @@ app.get("/", (req, res) => {
   const selectedDay = req.query.day || today;
   const currentWeek = weekOfYear(day);
 
-  foodItems$
-    .first()
-    .subscribe((results) =>
-      res.render("index", {
-        data: filterDay(results, selectedDay),
-        selectedDay,
-        currentWeek,
-        lastFetch: moment(lastFetch).fromNow(),
-      }));
+  if (!foodItems$) {
+    foodItems$ = createFoodStream();
+  }
+
+  foodItems$.first().subscribe(results =>
+    res.render("index", {
+      data: filterDay(results, selectedDay),
+      selectedDay,
+      currentWeek,
+      lastFetch: formatDistance(lastFetch, new Date(), { locale: sv })
+    })
+  );
+});
+
+app.get("/refresh", (_, res) => {
+  foodItems$ = null;
+
+  res.redirect("/");
 });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () =>
-  console.log(`Chalmersfood listening on http://localhost:${port}/`));
+  console.log(`Chalmersfood listening on http://localhost:${port}/`)
+);

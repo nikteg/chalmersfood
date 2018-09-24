@@ -27,5 +27,8 @@ html
             ul
               each food in restaurant.items
                 li= food
-    footer= "Uppdaterad " + lastFetch
+    footer
+      div= "Uppdaterad för " + lastFetch + " sedan"
+      a(href="/refresh")= "Tvinga omladdning av menyer"
+      a(href="https://github.com/nikteg/chalmersfood")= "Källkod"
   script(src="static/main.js")

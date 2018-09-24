@@ -53,3 +53,8 @@ footer {
   margin-top: 1rem;
   color: #bbb;
 }
+
+footer > * {
+  display: block;
+  margin-top: .25em;
+}
