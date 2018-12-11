@@ -1,6 +1,7 @@
 import { flatMap } from "./utils";
 import { JSDOM } from "jsdom";
 import { format } from "date-fns";
+import { groupBy, mapValues, identity, map, sortBy, orderBy, toPairs } from "lodash";
 
 export interface BaseRestaurant {
   name: string;
@@ -17,39 +18,20 @@ export type Format = JSONFormat | HTMLFormat | XMLFormat | PlainFormat;
 
 export namespace CarbonCloud {
   export interface DisplayName {
-    typeID: number;
-    displayName: string;
+    dishDisplayName: string;
   }
 
-  export interface Allergen {
-    id: number;
-    imageURLBright: string;
-    imageURLDark: string;
+  export interface Type {
+    dishTypeName: string;
   }
 
-  export interface Recipe {
+  export interface Item {
+    startDate: string;
     displayNames: DisplayName[];
-    cO2e: string;
-    cO2eURL: string;
-    allergens: Allergen[];
-    price: number;
+    dishType?: Type;
   }
 
-  export interface RecipeCategory {
-    name: string;
-    nameEnglish: string;
-    id: number;
-    recipes: Recipe[];
-  }
-
-  export interface Menu {
-    menuDate: Date;
-    recipeCategories: RecipeCategory[];
-  }
-
-  export interface RestaurantInput {
-    menus: Menu[];
-  }
+  export type RestaurantInput = Item[];
 }
 
 export interface JSONRestaurant<T> extends BaseRestaurant {
@@ -78,11 +60,7 @@ export type Restaurant =
   // | XMLRestaurant
   | PlainRestaurant;
 
-export function jsonRestaurant<T>(
-  name: string,
-  url: () => string,
-  map: (input: T) => string[][]
-): JSONRestaurant<T> {
+export function jsonRestaurant<T>(name: string, url: () => string, map: (input: T) => string[][]): JSONRestaurant<T> {
   return {
     name,
     url,
@@ -91,77 +69,66 @@ export function jsonRestaurant<T>(
   };
 }
 
-function displayRecipeCategory(category: CarbonCloud.RecipeCategory) {
-  return category.recipes.map(
-    recipe => `${category.name} – ${recipe.displayNames[0].displayName}`
-  );
+function displayRecipeCategory(item: CarbonCloud.Item) {
+  if (item.dishType) {
+    return `${item.dishType.dishTypeName} – ${item.displayNames[0].dishDisplayName}`;
+  } else {
+    return item.displayNames[0].dishDisplayName;
+  }
 }
 
-function appendDatesToUrl(url: string) {
-  const now = new Date();
-  const startDate = now.getDate() - now.getDay();
-  const endDate = startDate + 6;
+function getCBUrl(id: string) {
+  return `https://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/${id}/dishoccurrences`;
+}
 
-  return `${url}?startDate=${format(startDate, "YYYY-MM-DD")}&endDate=${format(
-    endDate,
-    "YYYY-MM-DD"
-  )}`;
+function appendDatesToCarbonCloudUrl(url: string) {
+  const now = new Date();
+  const startDayIndex = now.getDate() - now.getDay() + 1;
+  const endDayIndex = startDayIndex + 4;
+
+  const startDay = new Date();
+  startDay.setDate(startDayIndex);
+  const endDay = new Date();
+  endDay.setDate(endDayIndex);
+
+  const startDayString = format(startDay, "yyyy-MM-dd");
+  const endDayString = format(endDay, "yyyy-MM-dd");
+
+  return `${url}?startDate=${startDayString}&endDate=${endDayString}`;
+}
+
+function sortAndMapCarbonCloudResult(items: CarbonCloud.Item[]) {
+  console.log(items);
+  return map(sortBy(toPairs(groupBy(items, "startDate")), ([k, _]) => k), ([_, v]) => v.map(item => displayRecipeCategory(item)));
 }
 
 export const restaurants = [
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Kårresturangen",
-    () =>
-      appendDatesToUrl(
-        "http://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/21f31565-5c2b-4b47-d2a1-08d558129279/dishoccurrences"
-      ),
-    json =>
-      json.menus.map(menu =>
-        flatMap(displayRecipeCategory, menu.recipeCategories)
-      )
+    () => appendDatesToCarbonCloudUrl(getCBUrl("21f31565-5c2b-4b47-d2a1-08d558129279")),
+    sortAndMapCarbonCloudResult
   ),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Linsen",
-    () =>
-      appendDatesToUrl(
-        "http://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/b672efaf-032a-4bb8-d2a5-08d558129279/dishoccurrences"
-      ),
-    json =>
-      json.menus.map(menu =>
-        flatMap(displayRecipeCategory, menu.recipeCategories)
-      )
+    () => appendDatesToCarbonCloudUrl(getCBUrl("b672efaf-032a-4bb8-d2a5-08d558129279")),
+    sortAndMapCarbonCloudResult
   ),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Express",
-    () =>
-      appendDatesToUrl(
-        "http://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/3d519481-1667-4cad-d2a3-08d558129279/dishoccurrences"
-      ),
-    json =>
-      json.menus.map(menu =>
-        flatMap(displayRecipeCategory, menu.recipeCategories)
-      )
+    () => appendDatesToCarbonCloudUrl(getCBUrl("3d519481-1667-4cad-d2a3-08d558129279")),
+    sortAndMapCarbonCloudResult
   ),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "S.M.A.K.",
-    () =>
-      appendDatesToUrl(
-        "http://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/3ac68e11-bcee-425e-d2a8-08d558129279/dishoccurrences"
-      ),    json =>
-      json.menus.map(menu =>
-        flatMap(displayRecipeCategory, menu.recipeCategories)
-      )
+    () => appendDatesToCarbonCloudUrl(getCBUrl("3ac68e11-bcee-425e-d2a8-08d558129279")),
+    sortAndMapCarbonCloudResult
   ),
   <HTMLRestaurant>{
     name: "Einstein",
     url: () => "http://restaurang-einstein.se/",
     format: "text/html",
     map: jsdom => {
-      return [
-        ...jsdom.window.document.querySelectorAll(
-          "#column_gnxhsuatx .content-wrapper .column-content"
-        )
-      ]
+      return [...jsdom.window.document.querySelectorAll("#column_gnxhsuatx .content-wrapper .column-content")]
         .filter((_, i) => i % 2 == 1)
         .map(elem => {
           const ps = [...elem.querySelectorAll("p")];
