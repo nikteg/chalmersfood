@@ -22,7 +22,7 @@ let lastFetch = new Date();
 const createFoodStream = () =>
   Rx.Observable.from(restaurants)
     .concatMap(
-      restaurant => RxHR.get(restaurant.url),
+      restaurant => RxHR.get(restaurant.url()),
       (restaurant, data) => ({ restaurant, data })
     )
     .map(({ restaurant, data }) => {

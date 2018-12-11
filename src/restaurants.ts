@@ -1,9 +1,10 @@
 import { flatMap } from "./utils";
 import { JSDOM } from "jsdom";
+import { format } from "date-fns";
 
 export interface BaseRestaurant {
   name: string;
-  url: string;
+  url: () => string;
   date?: Date;
 }
 
@@ -79,7 +80,7 @@ export type Restaurant =
 
 export function jsonRestaurant<T>(
   name: string,
-  url: string,
+  url: () => string,
   map: (input: T) => string[][]
 ): JSONRestaurant<T> {
   return {
@@ -96,22 +97,46 @@ function displayRecipeCategory(category: CarbonCloud.RecipeCategory) {
   );
 }
 
+function appendDatesToUrl(url: string) {
+  const now = new Date();
+  const startDate = now.getDate() - now.getDay();
+  const endDate = startDate + 6;
+
+  return `${url}?startDate=${format(startDate, "YYYY-MM-DD")}&endDate=${format(
+    endDate,
+    "YYYY-MM-DD"
+  )}`;
+}
+
 export const restaurants = [
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Kårresturangen",
-    "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=5",
+    () =>
+      appendDatesToUrl(
+        "http://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/21f31565-5c2b-4b47-d2a1-08d558129279/dishoccurrences"
+      ),
     json =>
       json.menus.map(menu =>
         flatMap(displayRecipeCategory, menu.recipeCategories)
       )
   ),
-  // jsonRestaurant<CarbonCloud.RestaurantInput>(
-  //   "Linsen",
-  //   "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=33",
-  //   (json) => json.menus.map((menu) => flatMap(displayRecipeCategory, menu.recipeCategories))),
+  jsonRestaurant<CarbonCloud.RestaurantInput>(
+    "Linsen",
+    () =>
+      appendDatesToUrl(
+        "http://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/b672efaf-032a-4bb8-d2a5-08d558129279/dishoccurrences"
+      ),
+    json =>
+      json.menus.map(menu =>
+        flatMap(displayRecipeCategory, menu.recipeCategories)
+      )
+  ),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Express",
-    "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=7",
+    () =>
+      appendDatesToUrl(
+        "http://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/3d519481-1667-4cad-d2a3-08d558129279/dishoccurrences"
+      ),
     json =>
       json.menus.map(menu =>
         flatMap(displayRecipeCategory, menu.recipeCategories)
@@ -119,15 +144,17 @@ export const restaurants = [
   ),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "S.M.A.K.",
-    "http://carboncloudrestaurantapi.azurewebsites.net/api/menuscreen/getdataweek?restaurantid=42",
-    json =>
+    () =>
+      appendDatesToUrl(
+        "http://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/3ac68e11-bcee-425e-d2a8-08d558129279/dishoccurrences"
+      ),    json =>
       json.menus.map(menu =>
         flatMap(displayRecipeCategory, menu.recipeCategories)
       )
   ),
   <HTMLRestaurant>{
     name: "Einstein",
-    url: "http://restaurang-einstein.se/",
+    url: () => "http://restaurang-einstein.se/",
     format: "text/html",
     map: jsdom => {
       return [
