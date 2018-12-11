@@ -1,7 +1,7 @@
 import { flatMap } from "./utils";
 import { JSDOM } from "jsdom";
 import { format } from "date-fns";
-import { groupBy, mapValues, identity, map, sortBy, orderBy, toPairs } from "lodash";
+import { groupBy, mapValues, identity, map, sortBy, orderBy, toPairs, head } from "lodash";
 
 export interface BaseRestaurant {
   name: string;
@@ -19,6 +19,7 @@ export type Format = JSONFormat | HTMLFormat | XMLFormat | PlainFormat;
 export namespace CarbonCloud {
   export interface DisplayName {
     dishDisplayName: string;
+    displayNameCategory: { displayNameCategoryName: string; sortOrder: number };
   }
 
   export interface Type {
@@ -70,10 +71,12 @@ export function jsonRestaurant<T>(name: string, url: () => string, map: (input: 
 }
 
 function displayRecipeCategory(item: CarbonCloud.Item) {
+  const swedishDisplayName = head(item.displayNames.filter(dn => dn.displayNameCategory.displayNameCategoryName === "Swedish"))!.dishDisplayName;
+
   if (item.dishType) {
-    return `${item.dishType.dishTypeName} – ${item.displayNames[0].dishDisplayName}`;
+    return `${item.dishType.dishTypeName} – ${swedishDisplayName}`;
   } else {
-    return item.displayNames[0].dishDisplayName;
+    return swedishDisplayName;
   }
 }
 
@@ -98,8 +101,7 @@ function appendDatesToCarbonCloudUrl(url: string) {
 }
 
 function sortAndMapCarbonCloudResult(items: CarbonCloud.Item[]) {
-  console.log(items);
-  return map(sortBy(toPairs(groupBy(items, "startDate")), ([k, _]) => k), ([_, v]) => v.map(item => displayRecipeCategory(item)));
+  return map(sortBy(toPairs(groupBy(items, "startDate")), ([k, _]) => k), ([_, v]) => sortBy(v.map(item => displayRecipeCategory(item))));
 }
 
 export const restaurants = [
