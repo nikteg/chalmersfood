@@ -1,7 +1,7 @@
 import { flatMap } from "./utils";
 import { JSDOM } from "jsdom";
-import { format } from "date-fns";
-import { groupBy, mapValues, identity, map, sortBy, orderBy, toPairs, head } from "lodash";
+import { format, parse } from "date-fns";
+import { groupBy, mapValues, identity, map, sortBy, orderBy, toPairs, head, fromPairs } from "lodash";
 
 export interface BaseRestaurant {
   name: string;
@@ -80,11 +80,11 @@ function displayRecipeCategory(item: CarbonCloud.Item) {
   }
 }
 
-function getCBUrl(id: string) {
+export function getCBUrl(id: string) {
   return `https://carbonateapiprod.azurewebsites.net/api/v1/mealprovidingunits/${id}/dishoccurrences`;
 }
 
-function appendDatesToCarbonCloudUrl(url: string) {
+export function appendDatesToCarbonCloudUrl(url: string) {
   const now = new Date();
   const startDayIndex = now.getDate() - now.getDay() + 1;
   const endDayIndex = startDayIndex + 4;
@@ -100,30 +100,48 @@ function appendDatesToCarbonCloudUrl(url: string) {
   return `${url}?startDate=${startDayString}&endDate=${endDayString}`;
 }
 
-function sortAndMapCarbonCloudResult(items: CarbonCloud.Item[]) {
-  return map(sortBy(toPairs(groupBy(items, "startDate")), ([k, _]) => k), ([_, v]) => sortBy(v.map(item => displayRecipeCategory(item))));
+export function mapCarbonCloudResult(items: CarbonCloud.Item[]) {
+  const grouped = groupBy(items, "startDate");
+
+  // The order of the keys are random, sort them and re-assemble object
+  const pairs = toPairs(grouped);
+  const sorted = sortBy(pairs, ([dateString, _]) => {
+    const date = parse(dateString, "MM/dd/yyyy hh:mm:ss aa", new Date());
+
+    return Number(date);
+  });
+
+  const sortedGroup = fromPairs(sorted);
+
+  const weekWithNames = map(sortedGroup, week => {
+    const names = week.map(item => displayRecipeCategory(item));
+
+    return sortBy(names); // Alphabetical sort
+  });
+
+  return weekWithNames;
 }
 
 export const restaurants = [
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Kårresturangen",
     () => appendDatesToCarbonCloudUrl(getCBUrl("21f31565-5c2b-4b47-d2a1-08d558129279")),
-    sortAndMapCarbonCloudResult
+    mapCarbonCloudResult
   ),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Linsen",
     () => appendDatesToCarbonCloudUrl(getCBUrl("b672efaf-032a-4bb8-d2a5-08d558129279")),
-    sortAndMapCarbonCloudResult
+    mapCarbonCloudResult
   ),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "Express",
     () => appendDatesToCarbonCloudUrl(getCBUrl("3d519481-1667-4cad-d2a3-08d558129279")),
-    sortAndMapCarbonCloudResult
+    mapCarbonCloudResult
   ),
   jsonRestaurant<CarbonCloud.RestaurantInput>(
     "S.M.A.K.",
     () => appendDatesToCarbonCloudUrl(getCBUrl("3ac68e11-bcee-425e-d2a8-08d558129279")),
-    sortAndMapCarbonCloudResult
+    mapCarbonCloudResult
   ),
   <HTMLRestaurant>{
     name: "Einstein",

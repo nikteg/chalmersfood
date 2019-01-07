@@ -21,10 +21,7 @@ let lastFetch = new Date();
 
 const createFoodStream = () =>
   Rx.Observable.from(restaurants)
-    .concatMap(
-      restaurant => RxHR.get(restaurant.url()),
-      (restaurant, data) => ({ restaurant, data })
-    )
+    .concatMap(restaurant => RxHR.get(restaurant.url()), (restaurant, data) => ({ restaurant, data }))
     .map(({ restaurant, data }) => {
       if (data.response.statusCode === 200) {
         try {
@@ -82,6 +79,4 @@ app.get("/refresh", (_, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () =>
-  console.log(`Chalmersfood listening on http://localhost:${port}/`)
-);
+app.listen(port, () => console.log(`Chalmersfood listening on http://localhost:${port}/`));
