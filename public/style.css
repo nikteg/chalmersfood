@@ -1,13 +1,14 @@
-html {
-  position: relative;
-  min-height: 100%;
+@import url("https://fonts.googleapis.com/css?family=Abel");
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  box-sizing: border-box;
-  font: 14px/1.5em sans-serif;
-  background: #f2f2f2;
-  color: #333;
+  font: 16px/1.5em Abel, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  background: #ffffff;
+  color: #111;
   margin: 0 0 3.5em;
   padding: 1em;
 }
@@ -16,45 +17,55 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: .5em 0;
+  margin: 0.5em 0;
 }
 
 select {
-  font: 18px/1.5em sans-serif;
-  margin: 0 .5rem;
+  font: 18px/1.5em Abel, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  margin: 0 0.5rem;
+}
+
+select::-ms-expand {
+  display: none; /* remove default arrow in IE 10 and 11 */
 }
 
 a {
-  color: #333;
+  color: #111;
 }
 
 a:hover {
-  color: #FF0044;
+  color: #456886;
 }
 
 ul {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0 auto;
+  max-width: 640px;
 }
 
 li.restaurant li {
-  border-bottom: 1px solid #dedede;
+  line-height: 1rem;
   padding: 0.25em 0;
 }
 
 h3 {
-  border-bottom: 1px solid #dedede;
-  margin: 1.5em 0 0em 0;
+  text-transform: uppercase;
+  font-size: 1.5rem;
+  color: #456886;
+  margin: 1rem 0 0.25rem 0;
   padding-bottom: 0.25em;
+  border-bottom: 1px solid #456886;
 }
 
 footer {
+  opacity: 0.5;
+  text-align: center;
   margin-top: 1rem;
-  color: #bbb;
 }
 
 footer > * {
   display: block;
-  margin-top: .25em;
+  margin-top: 0.25em;
 }

@@ -74,7 +74,7 @@ function displayRecipeCategory(item: CarbonCloud.Item) {
   const swedishDisplayName = head(item.displayNames.filter(dn => dn.displayNameCategory.displayNameCategoryName === "Swedish"))!.dishDisplayName;
 
   if (item.dishType) {
-    return `${item.dishType.dishTypeName} – ${swedishDisplayName}`;
+    return `${item.dishType.dishTypeName.toUpperCase()} – ${swedishDisplayName}`;
   } else {
     return swedishDisplayName;
   }
