@@ -7,7 +7,7 @@ html
     meta(name="viewport", content="width=device-width")
   body
     header
-      h1= "Vecka " + currentWeek
+      h1= "Dagens lunch v. " + currentWeek
       select(id="day")
         each day, index in ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"]
           if index == selectedDay
@@ -26,7 +26,8 @@ html
           else
             ul
               each food in restaurant.items
-                li= food
+                li
+                  span= food
     footer
       div= "Uppdaterad för " + lastFetch + " sedan"
       a(href="/refresh")= "Tvinga omladdning av menyer"
