@@ -66,6 +66,7 @@ app.get("/", (req, res) => {
     res.render("index", {
       data: filterDay(results, selectedDay),
       selectedDay,
+      today,
       currentWeek,
       lastFetch: formatDistance(lastFetch, new Date(), { locale: sv })
     })
