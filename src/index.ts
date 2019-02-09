@@ -54,8 +54,8 @@ let foodItems$: Rx.Observable<RestaurantResult[]> | null = createFoodStream();
 
 app.get("/", (req, res) => {
   const day = new Date();
-  const today = Math.min(Math.max(0, day.getDay() - 1), 4);
-  const selectedDay = req.query.day || today;
+  const today = day.getDay() - 1;
+  const selectedDay = req.query.day ? Number(req.query.day) : Math.min(Math.max(0, today), 4); // Constrain to 0-4 (monday-friday)
   const currentWeek = weekOfYear(day);
 
   if (!foodItems$) {
