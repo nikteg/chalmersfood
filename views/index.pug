@@ -2,22 +2,24 @@ doctype html
 html
   head
     title Lunch på Chalmers
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css", rel="stylesheet")
     link(href="static/style.css", rel="stylesheet")
     link(href="static/favicon.png", rel="icon", type="image/png")
-    meta(name="viewport", content="width=device-width")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
   body
-    header
-      h1
-        a(href="/")= "Lunch v. " + currentWeek
-      ul
-        each day, index in ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"]
-          li(class={active: index == selectedDay, today: index == today})
-            a(href="?day=" + index)= day
-    div#content
-      ul
-        each restaurant in data
-          li(class="restaurant")
-            h3= restaurant.name
+    section.section.top
+      div.container
+        header
+          h1.title.has-text-centered
+            a(href="/")= "Lunch v. " + currentWeek
+          div.buttons
+            each day, index in ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"]
+              a.button.is-rounded(href="?day=" + index, class={"is-primary": index == selectedDay})= day
+    section.section.main
+      div.content.columns
+        div.column.is-three-fifths.is-offset-one-fifth
+          each restaurant in data
+            h2.restaurant-name= restaurant.name
             if restaurant.items.length === 0
               if restaurant.error
                 i= restaurant.error
@@ -27,9 +29,10 @@ html
               ul
                 each food in restaurant.items
                   li= food
-    footer
-      div= "Uppdaterad för " + lastFetch + " sedan..."
-      div
-        a(href="/refresh")= "Tvinga omladdning av menyer"
-        |&nbsp;|&nbsp;
-        a(href="https://github.com/nikteg/chalmersfood")= "Källkod"
+    footer.footer
+      div.content.has-text-centered
+        div= "Uppdaterad för " + lastFetch + " sedan..."
+        div
+          a(href="/refresh")= "Tvinga omladdning av menyer"
+          |&nbsp;|&nbsp;
+          a(href="https://github.com/nikteg/chalmersfood")= "Källkod"

@@ -1,94 +1,44 @@
-@import url("https://fonts.googleapis.com/css?family=Abel");
-
-* {
-  box-sizing: border-box;
-}
-
 body {
-  font: 16px/1.5em Abel, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol";
-  background: #ffffff;
-  color: #111;
-  margin: 0 0 3.5em;
-  padding: 1em 0;
+  font-size: 15px;
 }
 
-header {
+.section.top {
+  background: #333 url("header-compressed.jpg");
+  background-size: cover;
+  background-position-y: bottom;
+  padding: 3rem 2rem 2rem;
+}
+
+.section.top .title {
+  font-size: 2.5rem;
+}
+
+.section.top .title a {
+  color: white;
+  text-shadow: 0 0.1rem 0.25rem rgba(54, 54, 54, 0.75);
+}
+
+.section.top .buttons {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0.5em 0;
+  justify-content: center;
 }
 
-header ul {
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  justify-content: space-evenly;
-}
-
-header ul li a {
+.section.top .buttons .button {
   font-size: 14px;
-  display: block;
-  padding: 0.25em 0.75em;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 24px;
+  box-shadow: 0 0.1rem 0.25rem rgba(54, 54, 54, 0.75);
 }
 
-header ul li.today a {
-  box-shadow: inset 0px 0px 0px 2px #456886;
+.section.main {
+  padding: 1rem;
 }
 
-header ul li.active a {
-  background: #456886;
-  color: #fff;
-}
-
-header a {
-  text-decoration: none;
-}
-
-a {
-  color: #111;
-}
-
-a:hover {
-  color: #456886;
-}
-
-#content {
-  margin: 0 auto;
-  max-width: 640px;
-  padding: 0 10px;
-}
-
-ul {
+.section.main .content ul {
   list-style: none;
-  padding: 0;
-  margin: 0;
+  margin: 0.25rem;
 }
 
-li.restaurant li {
-  line-height: 1rem;
-  padding: 0.25em 0;
-}
-
-h3 {
-  text-transform: uppercase;
-  font-size: 1.5rem;
-  color: #456886;
-  margin: 1rem 0 0.25rem 0;
-  padding-bottom: 0.25em;
-  border-bottom: 1px solid #456886;
-}
-
-footer {
-  opacity: 0.5;
-  text-align: center;
-  margin-top: 1rem;
-}
-
-footer > * {
-  display: block;
-  margin-top: 0.25em;
+.section.main .content h2.restaurant-name {
+  margin: 0.5rem 0;
+  padding: 0.25rem;
+  border-bottom: 1px solid rgba(54, 54, 54, 0.25);
 }
